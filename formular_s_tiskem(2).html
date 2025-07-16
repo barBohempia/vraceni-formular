@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <title>Formulář pro vrácení zboží</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: auto; padding: 20px; }
+    label { display: block; margin-top: 15px; font-weight: bold; }
+    input[type="text"], input[type="email"], input[type="date"], textarea, select {
+      width: 100%; padding: 8px; margin-top: 5px;
+    }
+    .checkbox-group, .radio-group {
+      margin-top: 5px;
+    }
+    .checkbox-group label, .radio-group label {
+      display: flex; align-items: center; gap: 8px; margin: 4px 0;
+      font-weight: normal;
+    }
+    button { margin-top: 20px; padding: 10px 20px; font-size: 16px; }
+    #confirmation { display: none; margin-top: 30px; border-top: 1px solid #ccc; padding-top: 20px; }
+    .info-text { margin-top: 30px; font-size: 14px; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <h1>Formulář pro vrácení / výměnu zboží</h1>
+  <form id="returnForm">
+    <label for="jmeno">Jméno a příjmení</label>
+    <input type="text" id="jmeno" name="jmeno" required>
+
+    <label for="adresa">Adresa</label>
+    <textarea id="adresa" name="adresa" rows="3"></textarea>
+
+    <label for="kontakt">Kontaktní údaje</label>
+    <textarea id="kontakt" name="kontakt" rows="2"></textarea>
+
+    <label for="zbozi">Vracené zboží</label>
+    <textarea id="zbozi" name="zbozi" rows="2"></textarea>
+
+    <label for="datum_vraceni">Datum vrácení</label>
+    <input type="date" id="datum_vraceni" name="datum_vraceni">
+
+    <label for="cislo_faktury">Číslo faktury</label>
+    <input type="text" id="cislo_faktury" name="cislo_faktury">
+
+    <label for="datum_faktury">Datum vystavení faktury</label>
+    <input type="date" id="datum_faktury" name="datum_faktury">
+
+    <label>Prosím o:</label>
+    <div class="radio-group">
+      <label><input type="radio" name="prosim_o" value="Výměnu za jiný produkt">Výměnu za jiný produkt (níže napište produkt)</label>
+      <label><input type="radio" name="prosim_o" value="Vrácení peněz">Vrácení peněz na bankovní účet (níže napište číslo bankovního účtu)</label>
+    </div>
+
+    <label for="vymena">Chci zboží vyměnit za:</label>
+    <textarea id="vymena" name="vymena" rows="2"></textarea>
+
+    <label for="iban">Zadejte bankovní účet pro vrácení částky</label>
+    <input type="text" id="iban" name="iban">
+
+    <label>Důvod vrácení</label>
+    <div class="checkbox-group">
+      <label><input type="checkbox" name="duvod" value="Produkt neodpovídá fotografii/popisku">Produkt neodpovídá fotografii/popisku na e-shopu</label>
+      <label><input type="checkbox" name="duvod" value="Produkt je moc velký">Produkt je moc velký</label>
+      <label><input type="checkbox" name="duvod" value="Produkt je moc malý">Produkt je moc malý</label>
+      <label><input type="checkbox" name="duvod" value="Produkt nesedí">Produkt nesedí</label>
+      <label><input type="checkbox" name="duvod" value="Produkt nesplňuje představy">Produkt nesplňuje mé představy</label>
+      $1
+<input type="text" name="duvod_jine" placeholder="Doplňte jiný důvod" style="margin-left: 24px; margin-top: 4px; width: calc(100% - 24px);">
+    </div>
+
+    <label>Jak jste si vybrali velikost?</label>
+    <div class="checkbox-group">
+      <label><input type="checkbox" name="vyber" value="Tabulka na bohempia.com">Velikostní tabulka na bohempia.com</label>
+      <label><input type="checkbox" name="vyber" value="Velikost stélek">Pomocí jednotlivých velikostí stélek</label>
+      <label><input type="checkbox" name="vyber" value="Obvyklá velikost">Vybral/a jsem si svou obvyklou velikost</label>
+      $1
+<input type="text" name="vyber_jine" placeholder="Doplňte jiný způsob výběru" style="margin-left: 24px; margin-top: 4px; width: calc(100% - 24px);">
+    </div>
+
+    <p class="info-text">
+      Odesláním formuláře souhlasíte se zásadami Ochrany osobních údajů:
+      <a href="https://www.bohempia.com/obchodni-podminky/" target="_blank">https://www.bohempia.com/obchodni-podminky/</a>
+    </p>
+    <button type="submit">Odeslat</button>
+  </form>
+
+  <div id="confirmation">
+    <h2>Děkujeme za vyplnění formuláře.</h2>
+    <p><strong>Jméno:</strong> <span id="outJmeno"></span></p>
+    <button onclick="window.print()">Tisknout potvrzení</button>
+
+    <div class="info-text">
+      Vaše zboží prosím zašlete na naši adresu:
+      Bohempia s.r.o.
+      Sokolovská 105/76
+      186 00 Praha
+      Česká republika
+
+      IČ: 03827879
+      DIČ: CZ03827879
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('returnForm');
+    const confirmation = document.getElementById('confirmation');
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const getCheckedValues = (name) => {
+        return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(el => el.value).join(', ');
+      };
+
+      const data = {
+        "jmeno": form.jmeno.value,
+        "adresa": form.adresa.value,
+        "kontakt": form.kontakt.value,
+        "zbozi": form.zbozi.value,
+        "datum_vraceni": form.datum_vraceni.value,
+        "cislo_faktury": form.cislo_faktury.value,
+        "datum_faktury": form.datum_faktury.value,
+        "prosim_o": form.querySelector('input[name="prosim_o"]:checked')?.value || '',
+        "vymena": form.vymena.value,
+        "iban": form.iban.value,
+        "duvod": getCheckedValues("duvod") + (form.duvod_jine.value ? `, ${form.duvod_jine.value}` : ''),
+        "vyber": getCheckedValues("vyber") + (form.vyber_jine.value ? `, ${form.vyber_jine.value}` : '')
+      };
+
+      fetch("https://script.google.com/macros/s/AKfycbz0iBSO96zQWA-u8-56bO6fLX_4gBI93d8HEUcY_McAFfaqDzaFfh-ptIi1rw-FY6VQ/exec", {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: { "Content-Type": "application/json" }
+      })
+      .then(response => response.text())
+      .then(result => {
+        document.getElementById('outJmeno').textContent = form.jmeno.value;
+        form.style.display = 'none';
+        confirmation.style.display = 'block';
+      })
+      .catch(error => alert('Došlo k chybě při odesílání formuláře.'));  
+    });
+  </script>
+</body>
+</html>
